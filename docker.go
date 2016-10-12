@@ -46,9 +46,17 @@ type Parameters struct {
 
 // Volume is the docker volume details associated to the container
 type Volume struct {
-	ContainerPath string `json:"containerPath,omitempty"`
-	HostPath      string `json:"hostPath,omitempty"`
-	Mode          string `json:"mode,omitempty"`
+	ContainerPath  string          `json:"containerPath,omitempty"`
+	HostPath       string          `json:"hostPath,omitempty"`
+	ExternalVolume *ExternalVolume `json:"external,omitempty"`
+	Mode           string          `json:"mode,omitempty"`
+}
+
+// An external volume definition
+type ExternalVolume struct {
+	Name     string             `json:"name,omitempty"`
+	Provider string             `json:"provider,omitempty"`
+	Options  *map[string]string `json:"options,omitempty"`
 }
 
 // Docker is the docker definition from a marathon application
@@ -87,6 +95,36 @@ func (container *Container) Volume(hostPath, containerPath, mode string) *Contai
 // keep the current value)
 func (container *Container) EmptyVolumes() *Container {
 	container.Volumes = &[]Volume{}
+	return container
+}
+
+// Define external volumes attached to the container
+//      containerPath: the path inside the container to map the volume
+//      name: the name of the volume
+//      provider: the provider of the volume (e.g. dvdi)
+//      mode: the read/write mode for the volume (e.g. RW)
+//      opts: the map of options for the external volume
+func (container *Container) ExternalVolume(containerPath string,
+	name string, provider string, mode string, opts map[string]string) *Container {
+	if container.Volumes == nil {
+		container.EmptyVolumes()
+	}
+
+	ev := ExternalVolume{
+		Name:     name,
+		Provider: provider,
+		Options:  &opts,
+	}
+
+	volumes := *container.Volumes
+	volumes = append(volumes, Volume{
+		ContainerPath:  containerPath,
+		ExternalVolume: &ev,
+		Mode:           mode,
+	})
+
+	container.Volumes = &volumes
+
 	return container
 }
 
