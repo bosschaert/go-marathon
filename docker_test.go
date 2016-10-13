@@ -83,3 +83,23 @@ func TestPortMappingLabels(t *testing.T) {
 	assert.NotNil(t, pm.Labels)
 	assert.Equal(t, 0, len(*pm.Labels))
 }
+
+func TestExternalVolumes(t *testing.T) {
+	container := NewDockerApplication().Container
+
+	container.Volume("", "cp", "RW")
+	ev := (*container.Volumes)[0].ExternalVolume("myVolume", "dvdi")
+
+	ev.AddOption("prop", "pval")
+	ev.AddOption("dvdi", "rexray")
+
+	assert.Equal(t, (*container.Volumes)[0].ContainerPath, "cp")
+	assert.Equal(t, (*container.Volumes)[0].External.Name, "myVolume")
+	assert.Equal(t, (*container.Volumes)[0].External.Provider, "dvdi")
+	assert.Equal(t, 1, len(*container.Volumes))
+
+	evt := (*container.Volumes)[0].External
+	assert.Equal(t, (*evt.Options)["dvdi"], "rexray")
+	assert.Equal(t, (*evt.Options)["prop"], "pval")
+	assert.Equal(t, 2, len(*evt.Options))
+}
