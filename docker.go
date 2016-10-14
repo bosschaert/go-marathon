@@ -101,7 +101,7 @@ func (container *Container) EmptyVolumes() *Container {
 // Define external elements for a volume
 //      name: the name of the volume
 //      provider: the provider of the volume (e.g. dvdi)
-func (v *Volume) ExternalVolume(name, provider string) *ExternalVolume {
+func (v *Volume) SetExternalVolume(name, provider string) *ExternalVolume {
 	ev := &ExternalVolume{
 		Name:     name,
 		Provider: provider,
@@ -110,7 +110,8 @@ func (v *Volume) ExternalVolume(name, provider string) *ExternalVolume {
 	return ev
 }
 
-func (v *Volume) EmptyVolume() *Volume {
+// Empty the external volume definition
+func (v *Volume) EmptyExternalVolume() *Volume {
 	v.External = &ExternalVolume{}
 	return v
 }

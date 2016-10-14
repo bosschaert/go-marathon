@@ -103,7 +103,7 @@ func TestExternalVolume(t *testing.T) {
 	container := NewDockerApplication().Container
 
 	container.Volume("", "cp", "RW")
-	ev := (*container.Volumes)[0].ExternalVolume("myVolume", "dvdi")
+	ev := (*container.Volumes)[0].SetExternalVolume("myVolume", "dvdi")
 
 	ev.AddOption("prop", "pval")
 	ev.AddOption("dvdi", "rexray")
@@ -117,7 +117,7 @@ func TestExternalVolume(t *testing.T) {
 	}
 
 	// empty the external volume again
-	(*container.Volumes)[0].EmptyVolume()
+	(*container.Volumes)[0].EmptyExternalVolume()
 	ev2 := (*container.Volumes)[0].External
 	assert.Equal(t, ev2.Name, "")
 	assert.Equal(t, ev2.Provider, "")
