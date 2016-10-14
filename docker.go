@@ -102,12 +102,17 @@ func (container *Container) EmptyVolumes() *Container {
 //      name: the name of the volume
 //      provider: the provider of the volume (e.g. dvdi)
 func (v *Volume) ExternalVolume(name, provider string) *ExternalVolume {
-	ev := ExternalVolume{
+	ev := &ExternalVolume{
 		Name:     name,
 		Provider: provider,
 	}
-	v.External = &ev
-	return &ev
+	v.External = ev
+	return ev
+}
+
+func (v *Volume) EmptyVolume() *Volume {
+	v.External = &ExternalVolume{}
+	return v
 }
 
 // AddOption adds an option to an ExternalVolume
